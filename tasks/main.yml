@@ -1,0 +1,46 @@
+---
+# tasks file for ansible.zsh
+- name: install required packages
+  pacman:
+    name:
+      - zsh
+      - zsh-theme-powerlevel10k
+      - zsh-autosuggestions
+    state: present
+  become: true
+
+- name: install antigen via AUR
+  aur:
+    name: antigen
+
+- name: get the current (assumed to be) non-priv user
+  set_fact:
+    nonprivuser: "{{ ansible_user_id }}"
+
+- name: cant get the users homedir via eval, lookup seems to run on localhost which means it misreports when testing in docker
+  shell: "grep {{ nonprivuser }} /etc/passwd | awk -F ':' '{print $6}'"
+  register: homedir
+  changed_when: false
+
+- name: change the shell to zsh, now its installed
+  user:
+    name: "{{ nonprivuser }}"
+    shell: "/usr/bin/zsh"
+  become: true
+
+- name: create the zsh config folder
+  file:
+    path: "/{{ homedir.stdout }}/.zsh"
+    state: directory
+
+# copy in the zsh files we need
+- name: copy in configs
+  synchronize:
+    src: "files/"
+    dest: "/{{ homedir.stdout }}/.zsh/"
+
+- name: symlink zshrc
+  file:
+    src: "/{{ homedir.stdout }}/.zsh/zshrc"
+    dest: "/{{ homedir.stdout }}/.zshrc"
+    state: link
