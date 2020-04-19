@@ -24,6 +24,8 @@
           isdir: false
         - path: "{{ homedir }}/.zshrc"
           isdir: false
+        - path: "{{ homedir }}/.ssh"
+          isdir: true
       required_packages:
         - antigen
         - zsh

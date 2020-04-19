@@ -75,13 +75,13 @@ export WORKON_HOME="~/.virtualenvs"
 POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
 # source stuff
 [[ ! -f ~/.zsh/aliases ]] || source ~/.zsh/aliases
-[[ ! -f /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme ]] || source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
-[[ ! -f /usr/share/zsh/share/antigen.zsh ]] || source /usr/share/zsh/share/antigen.zsh
-[[ ! -f /usr/bin/virtualenvwrapper.sh ]] || source /usr/bin/virtualenvwrapper.sh
+[[ ! -f /usr/bin/aws_zsh_completer.sh ]] || source /usr/bin/aws_zsh_completer.sh
 [[ ! -f ~/.zsh/p10k.zsh ]] || source ~/.zsh/p10k.zsh
+[[ ! -f /usr/bin/virtualenvwrapper.sh ]] || source /usr/bin/virtualenvwrapper.sh
 [[ ! -f /usr/share/fzf/completion.zsh ]] || source /usr/share/fzf/completion.zsh
 [[ ! -f /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ]] || source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-[[ ! -f /usr/bin/aws_zsh_completer.sh ]] || source /usr/bin/aws_zsh_completer.sh
+[[ ! -f /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme ]] || source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
+[[ ! -f /usr/share/zsh/share/antigen.zsh ]] || source /usr/share/zsh/share/antigen.zsh
 
 # virtualenvwrapper config
 # https://stackoverflow.com/questions/6401951/using-different-versions-of-python-with-virtualenvwrapper

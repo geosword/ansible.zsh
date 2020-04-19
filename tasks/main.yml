@@ -28,10 +28,13 @@
     shell: "/usr/bin/zsh"
   become: true
 
-- name: create the zsh config folder
+- name: create some folders
   file:
-    path: "/{{ homedir.stdout }}/.zsh"
+    path: "/{{ homedir.stdout }}/{{ item}}"
     state: directory
+  loop:
+    - ".zsh"
+    - ".ssh"
 
 # copy in the zsh files we need
 - name: copy in configs
