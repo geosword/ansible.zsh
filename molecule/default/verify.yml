@@ -29,6 +29,7 @@
           isdir: true
       required_packages:
         - antigen
+        - keychain
         - zsh
         - zsh-autosuggestions
         - zsh-theme-powerlevel10k

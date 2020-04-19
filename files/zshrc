@@ -1,5 +1,5 @@
 # https://stackoverflow.com/questions/592620/how-can-i-check-if-a-program-exists-from-a-bash-script
-[[ -x /usr/bin/keychain ]] && eval $(keychain --eval id_rsa)
+[[ -x /usr/bin/keychain ]] && [[ -r ~/.ssh/id_rsa ]] && /usr/bin/keychain --eval id_rsa
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.

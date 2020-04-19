@@ -54,7 +54,7 @@
   block:
     - name: Get installed packages
       shell:
-        cmd: "{{ package_list_command }}"
+        cmd: "{{ package_list_command }}" # noqa 305
       register: installedpackages
       changed_when: false
 

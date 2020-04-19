@@ -1,8 +1,6 @@
 ---
 - name: Converge
   hosts: all
-  roles:
-    - kewlfft.aur
   tasks:
     - name: "Include ansible.zsh"
       include_role:

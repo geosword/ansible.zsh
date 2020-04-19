@@ -3,6 +3,7 @@
 - name: install required packages
   pacman:
     name:
+      - keychain
       - zsh
       - zsh-theme-powerlevel10k
       - zsh-autosuggestions
@@ -12,13 +13,15 @@
 - name: install antigen via AUR
   aur:
     name: antigen
+  tags:
+    - skip_ansible_lint
 
 - name: get the current (assumed to be) non-priv user
   set_fact:
     nonprivuser: "{{ ansible_user_id }}"
 
 - name: cant get the users homedir via eval, lookup seems to run on localhost which means it misreports when testing in docker
-  shell: "grep {{ nonprivuser }} /etc/passwd | awk -F ':' '{print $6}'"
+  shell: "set -o pipefail && grep {{ nonprivuser }} /etc/passwd | awk -F ':' '{print $6}'" # noqa 305
   register: homedir
   changed_when: false
 
@@ -30,7 +33,7 @@
 
 - name: create some folders
   file:
-    path: "/{{ homedir.stdout }}/{{ item}}"
+    path: "/{{ homedir.stdout }}/{{ item }}"
     state: directory
   loop:
     - ".zsh"
