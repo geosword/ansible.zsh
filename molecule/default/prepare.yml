@@ -1,0 +1,97 @@
+---
+- name: Prepare
+  hosts: webservers
+  gather_facts: true
+  become: true
+  no_log: "{{ molecule_no_log }}"
+  tasks:
+    - name: include any cloned database information that might exist so we can skip it if looks like the clones already exist
+      include_vars:
+        dir: ./vars
+        ignore_files:
+          - .keep
+        extensions:
+          - yml
+          - yaml
+
+    - name: block for when database cloning is required
+      block:
+        - name: Set some variables for cloning databases
+          set_fact:
+            run_id: "{{ lookup('password','/dev/null chars=ascii_letters') | lower }}"
+
+        # This is probably the closest to a procedure we can get with ansible
+        - name: clone whmcs databases
+          include_tasks: database.yml
+          vars:
+            clone_cluster_suffix: "{{ run_id }}{{ lookup('env','BUDDY_EXECUTION_ID') }}"
+            clone_source_data: "{{ whmcs_credentials }}"
+            clone_cluster_host_var: "db_host"
+            clone_patch_var_name: whmcs_credentials_patch
+            clone_vars_filename: "{{ clone_var_file_whmcs }}"
+
+        - name: clone craft database
+          include_tasks: database.yml
+          vars:
+            clone_cluster_suffix: "{{ run_id }}"
+            clone_source_data:
+              - "{{ craft_credentials }}"
+            clone_cluster_host_var: "db_host"
+            clone_patch_var_name: craft_credentials_patch
+            clone_vars_filename: "{{ clone_var_file_craft }}"
+
+        - name: output the rds cluster suffix to make erasing orphaned db clusters easier
+          debug:
+            msg: "rds cluster suffix is: {{ run_id }}{{ lookup('env','BUDDY_EXECUTION_ID') }}"
+
+      become: false
+      when:
+        - clone_databases is defined
+        - clone_databases
+        - whmcs_credentials_patch is not defined
+        - craft_credentials_patch is not defined
+
+    - name: Install python for Ansible
+      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal python-zipstream)
+      changed_when: false
+
+    - name: apt
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: get package facts
+      package_facts:
+
+    # TODO This is only needed while we're using an "out of date AMI"
+    - name: wait for the lock on /var/lib/dpkg/lock-frontend to be released # noqa 305 301
+      action: shell lsof /var/lib/dpkg/lock-frontend
+      register: result
+      until: result.rc != 0
+      ignore_errors: true
+      retries: 20
+      delay: 3
+      become: true
+
+    - name: block of stuff to do if nginx is not the right version
+      block:
+        - name: remove old nginx and nginx-common with prejudice
+          apt:
+            pkg:
+              - libnginx-mod-http-dav-ext
+              - libnginx-mod-http-echo
+              - libnginx-mod-http-geoip
+              - libnginx-mod-http-image-filter
+              - libnginx-mod-http-subs-filter
+              - libnginx-mod-http-upstream-fair
+              - libnginx-mod-http-xslt-filter
+              - libnginx-mod-mail
+              - libnginx-mod-stream
+              - nginx
+              - nginx-full
+              - nginx-common
+            state: absent
+            purge: true
+      when:
+        - ansible_facts.packages['nginx'] is defined
+        - not '1.19' in ansible_facts.packages['nginx'][0]['version']

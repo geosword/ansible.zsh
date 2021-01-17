@@ -5,8 +5,7 @@
     name:
       - keychain
       - zsh
-      - zsh-theme-powerlevel10k
-      - zsh-autosuggestions
+      - python-virtualenvwrapper
     state: present
   become: true
 
@@ -35,18 +34,26 @@
   file:
     path: "/{{ homedir.stdout }}/{{ item }}"
     state: directory
+    mode: '0750'
+    owner: "{{ nonprivuser }}"
   loop:
     - ".zsh"
     - ".ssh"
+  tags:
+    - molecule-idempotence-notest
 
 # copy in the zsh files we need
 - name: copy in configs
   synchronize:
     src: "files/"
     dest: "/{{ homedir.stdout }}/.zsh/"
+  tags:
+    - molecule-idempotence-notest
 
 - name: symlink zshrc
   file:
     src: "/{{ homedir.stdout }}/.zsh/zshrc"
     dest: "/{{ homedir.stdout }}/.zshrc"
     state: link
+
+- debug: msg="distribution {{ ansible_distribution }}"

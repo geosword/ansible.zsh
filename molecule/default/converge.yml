@@ -4,4 +4,4 @@
   tasks:
     - name: "Include ansible.zsh"
       include_role:
-        name: "ansible.zsh"
+        name: "ansible-role-zsh"

@@ -6,7 +6,8 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: ansible.zsh
+  - name: ansible-role-zsh
+    group: arch
     image: geosword/archpy:2020033002
     dockerfile: Dockerfile.j2
     pull: false
